@@ -4,7 +4,7 @@ module.exports = (options,app) =>{
         if(ctx.session.openId){
             await next()
         }else{
-            ctx.body={data:'没有登录'}
+            ctx.body={data:'没有登录123'}
         }
     }
 }

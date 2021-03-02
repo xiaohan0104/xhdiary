@@ -5,15 +5,37 @@
         <el-col :span="4"><div class="content">文章表题</div></el-col>
         <el-col :span="4"
           ><div class="bg-purple">
-            <el-input v-model="articleTitle" placeholder="请输入内容"></el-input></div
+            <el-input
+              v-model="articleTitle"
+              placeholder="请输入内容"
+            ></el-input></div
         ></el-col>
         <el-col :span="4"><div class="content">文章简介</div></el-col>
         <el-col :span="8"
           ><div class="bg-purple">
-            <el-input v-model="introducehtml" placeholder="请输入内容"></el-input></div
+            <el-input
+              v-model="introducehtml"
+              placeholder="请输入内容"
+            ></el-input></div
         ></el-col>
+        <el-col :span="2">
+          <el-select
+            v-model="selectedType"
+            placeholder="请选择状态"
+            @change="styleChange"
+          >
+            <el-option
+              v-for="item in typeInfo"
+              :key="item.Id"
+              :label="item.typeName"
+              :value="item.orderNum"
+            />
+          </el-select>
+        </el-col>
         <el-col :span="2"
-          ><el-button class="tbutton" type="primary">提交</el-button></el-col
+          ><el-button class="tbutton" type="primary" @click="saveArticle"
+            >提交</el-button
+          ></el-col
         >
       </el-row>
     </div>
@@ -33,6 +55,15 @@ import servicePath from "@/common/apiUrl";
 
 export default {
   name: "Add",
+  created: function () {
+    this.getTypeInfo();
+    let tmpId = this.$route.query.id;
+    console.log("tmoid" + tmpId);
+    if (tmpId) {
+      this.articleId = tmpId;
+      this.getArticleById(tmpId);
+    }
+  },
   data() {
     return {
       articleId: 0, // 文章的ID，如果是0说明是新增加，如果不是0，说明是修改
@@ -48,28 +79,95 @@ export default {
     };
   },
   methods: {
-    getTypeInfo() {},
+    saveArticle() {
+      if (!this.selectedType) {
+        this.$message.error("必须选择文章类别");
+        return false;
+      } else if (!this.articleTitle) {
+        this.$message.error("文章名称不能为空");
+        return false;
+      } else if (!this.articleContent) {
+        this.$message.error("文章内容不能为空");
+        return false;
+      } else if (!this.introducehtml) {
+        this.$message.error("简介不能为空");
+        return false;
+      }
+      this.$message.success("通过");
+      let dataProps = {};
+      dataProps.type_id = this.selectedType;
+      dataProps.title = this.articleTitle;
+      dataProps.article_content = this.articleContent;
+      dataProps.introduce = this.introducehtml;
+      dataProps.addTime = new Date().getTime();
+      if (this.articleId == 0) {
+        request({
+          method: "post",
+          url: servicePath.addArticle,
+          data: dataProps,
+          withCredentials: true,
+          header: { "Access-Control-Allow-Origin": "*" },
+        }).then((res) => {
+          console.log(res);
+          this.articleId = res.insertId;
+          if (res.isScuccess) {
+            this.$message.success("文章保存成功");
+          } else {
+            this.$message.error("文章保存失败");
+          }
+        });
+      } else {
+        dataProps.id = this.articleId;
+        request({
+          method: "post",
+          data: dataProps,
+          url: servicePath.updateArticle,
+          withCredentials: true,
+          header: { "Access-Control-Allow-Origin": "*" },
+        }).then((res) => {
+          if (res.isScuccess) {
+            this.$message.success("文章保存成功");
+          } else {
+            this.$message.error("文章保存失败");
+          }
+        });
+      }
+    },
+    getTypeInfo() {
+      request({
+        method: "get",
+        url: servicePath.getTypeInfo,
+        header: { "Access-Control-Allow-Origin": "*" },
+        withCredentials: true,
+      }).then((res) => {
+        if (res.data == "没有登录") {
+          localStorage.removeItem("openId");
+          this.$router.push("/login");
+          console.log(456);
+        } else {
+          this.typeInfo = res.data;
+          // console.log(this.typeInfo);
+        }
+      });
+    },
+    getArticleById(tmpId) {
+      request({
+        url: servicePath.getArticleById + tmpId,
+        withCredentials: true,
+        header: { "Access-Control-Allow-Origin": "*" },
+      }).then((res) => {
+        console.log(res);
+        this.articleTitle = res.data[0].title;
+        this.articleContent = res.data[0].article_content;
+        this.introducehtml = res.data[0].introduce;
+        this.selectedType = res.data[0].typeId;
+      });
+    },
+    styleChange(id) {
+      console.log(id);
+    },
   },
-  created: function () {
-    request({
-      method: "get",
-      url: servicePath.getTypeInfo,
-      header: { "Access-Control-Allow-Origin": "*" },
-      withCredentials: true,
-    }).then(
-                    res => {
-                if (res.data == "没有登录") {
-                    localStorage.removeItem('openId')
-                    this.$router.push('/login')
-                    console.log(456)
-                } else {
-                    this.typeInfo = res.data
-                    console.log(456789)
-                }
 
-            }
-    );
-  },
   components: {
     mavonEditor,
   },
