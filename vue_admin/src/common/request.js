@@ -3,7 +3,7 @@ export function request(config){
     // 创建默认axios
     const instance = axios.create({
         baseURL:'',
-        timeout: 5000
+        timeout: 5000,
     });
     // 拦截axios请求 config是请求信息
     instance.interceptors.request.use(

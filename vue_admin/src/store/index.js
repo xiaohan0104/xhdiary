@@ -26,9 +26,12 @@ export default new Vuex.Store({
         url: servicePath.checkLogin,
         data: user,
         withCredentials: true,
+        header: { "Access-Control-Allow-Origin": "*" },
       })
-      context.commit('userLogin',user);
       return jieguo
+    },
+    userLoginb(context,user){
+      context.commit('userLogin',user)
     }
   },
 })

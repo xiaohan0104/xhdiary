@@ -19,6 +19,7 @@ class MainController extends Contoller{
         //登录成功,进行session缓存
         let openId=new Date().getTime()
         this.ctx.session.openId={ 'openId':openId }
+        // console.log(ctx.session.openId)
         this.ctx.body={'data':'登录成功','openId':openId}
     }else{
         this.ctx.body={data:'登录失败'}

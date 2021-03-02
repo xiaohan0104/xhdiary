@@ -3,7 +3,7 @@
     <div class="login_box">
       <!-- 登陆表单区域 -->
       <el-form
-        v-loading="isLoding"
+        v-loading="isLoading"
         ref="loginFormRef"
         :model="loginconst"
         :rules="LoginfromRules"
@@ -26,6 +26,7 @@
         </el-form-item>
       </el-form>
     </div>
+    <button @click="isTrue">4564564</button>
   </div>
 </template>
 
@@ -40,7 +41,7 @@ export default {
         username: "",
         password: "",
       },
-      isLoding: false,
+      isLoading: false,
       LoginfromRules: {
         // 验证用户名是否合法
         username: [
@@ -73,7 +74,7 @@ export default {
     // 登录
     loginForm() {
       console.log(this.loginconst.username);
-      // this.isLoding = true;
+      this.isLoading = true;
       // 验证用户经密码为空
       if (!this.loginconst.username) {
         this.$alert("请求失败", "请输入用户名", {
@@ -95,7 +96,8 @@ export default {
         if (res.data == "登录成功") {
           localStorage.setItem("openId", res.openId);
           console.log(localStorage.getItem("openId"));
-          this.$router.push('/')
+          this.$store.dispatch('userLoginb',dataProps)
+          this.$router.push('/home')
         } else {
           this.$alert("请求失败222222222", "请输入密码", {
             confirmButtonText: "确定",
@@ -104,6 +106,10 @@ export default {
       });
 
     },
+    isTrue(){
+      this.isLoading=true;
+      console.log(this.isLoading)
+    }
   },
 };
 </script>
