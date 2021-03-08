@@ -1,4 +1,3 @@
-<!--  -->
 <template>
   <div id="lbox">
     <div class="boxchild" v-for="(item) in myResponse" :key="item.id">
@@ -16,61 +15,40 @@
 import apiUrl from "@/urlApi/apiUrl";
 export default {
   async asyncData({ $axios }) {
-    const typeList = await $axios.get(apiUrl.getTypeInfo);
-    console.log(typeList.data.data);
-    console.log(123);
-
-    const baseResult = await $axios.get(apiUrl.getArticleList);
-    console.log(baseResult.data.data)
+    const baseResult = await $axios.get(apiUrl.getListById + "2", {
+      withCredentials: true,
+      header: { "Access-Control-Allow-Origin": "*" }
+    });
+    console.log(baseResult);
     return {
-      myResponse: baseResult.data.data,
-      typeList: typeList.data.data
+      myResponse: baseResult.data.data
     };
   },
   data() {
     return {
-      activeIndex: "second"
+      ue: 123
     };
-  },
-  methods: {
-    handleSelect(tab, event) {
-      window.console.log(tab);
-      window.console.log(11111111111111111111);
-      window.console.log(event);
-      if (tab == 1) {
-        this.$router.push("list");
-      } else {
-        this.$router.push({ name: "", params: { id: tab } });
-      }
-    }
-  },
-
-  computed: {
-    defaultActive() {
-      return "/" + this.$route.path.split("/").reverse()[0];
-    }
   }
 };
 </script>
+
 <style>
 html{
   background-color: rgb(240, 240, 240);
-  padding: 0;
+    padding: 0;
   margin: 0;
 }
 #lbox {
   height: 100%;
-  width: 100%;
-  background-color: rgb(240, 240, 240);
   /* background-color: rgb(240, 240, 240); */
 }
 .boxchild{
   margin: 0 auto;
   margin-top: 5px;
   background-color: white;
-  width: 100%;
+  width: 95%;
   height:100px;
-  border-radius: 5%;
+  border-radius: 2%;
 }
 .childtitle{
   font-family: "Times New Roman", Times, serif;
@@ -79,7 +57,6 @@ html{
     /* text-align:center; */
   display: block;
   color: rgb(121, 121, 255);
-
 }
 .childintroduce{
       text-align:center;
